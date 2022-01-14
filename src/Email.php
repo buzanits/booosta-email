@@ -40,7 +40,8 @@ class Email extends \booosta\base\Module
     $this->content = $content;
     $this->contenttype = 'text/html';
 
-    $this->backend = 'mail';
+    $this->backend = $this->config('mail_backend') ?? 'mail';
+    $this->smtp_params = $this->config('mail_smtp_params');
   }
 
   public function set_sender($sender) { $this->sender = $sender; }
