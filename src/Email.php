@@ -118,7 +118,7 @@ class Email extends \booosta\base\Module
 
     if($this->debuglevel !== null):
       $mailer->SMTPDebug = $this->debuglevel;
-      $mailer->DebugOutput = function($str, $level) { \booosta\debug($str); };
+      $mailer->DebugOutput = function($str, $level) { \booosta\Framework::debug($str); };
     endif;
 
     $mailer->setFrom($senderaddr, $sender_name);
@@ -173,6 +173,14 @@ class Email extends \booosta\base\Module
       $mailer->Username = $this->smtp_params['username'];
       $mailer->Password = $this->smtp_params['password'];
       $mailer->Port = $this->smtp_params['port'] ?? 25;
+
+      if($this->smtp_params['starttls']) $mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+
+      if($this->smtp_params['tls']):
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->Port = $this->smtp_params['port'] ?? 465;
+      endif;
+      #b::debug("$mailer->Host/$mailer->Username/$mailer->Password/$mailer->Port");
     endif;
 
     foreach($this->receivers as $rec_name=>$receiver):
