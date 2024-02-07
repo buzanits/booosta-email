@@ -18,7 +18,7 @@ class Email extends \booosta\base\Module
   protected $images, $attachments, $attachment_data;
   protected $content;
   protected $contenttype;
-  protected $backend, $smtp_params;
+  protected $backend, $smtp_params, $verify_peer = true;
   protected $debuglevel;
 
   public function __construct($sender = null, $receivers = null, $subject = null, $content = '')
@@ -57,6 +57,7 @@ class Email extends \booosta\base\Module
   public function set_debuglevel($debuglevel) { $this->debuglevel = $debuglevel; }
   public function set_smtp_params($smtp_params) { $this->smtp_params = $smtp_params; }
   public function set_returnpath($returnpath) { $this->returnpath = $returnpath; }
+  public function verify_peer($flag) { $this->verify_peer = $flag; }
 
   public function add_receivers($receivers)
   {
@@ -168,17 +169,20 @@ class Email extends \booosta\base\Module
     if($this->backend == 'smtp'):
       $mailer->isSMTP();
       $mailer->AuthType = 'LOGIN';
-      $mailer->Host = $this->smtp_params['host'] ?? 'localhost';
+      $mailer->Host = trim($this->smtp_params['host']) ?? 'localhost';
       $mailer->SMTPAuth = $this->smtp_params['auth'] ?? false;
-      $mailer->Username = $this->smtp_params['username'];
+      $mailer->Username = trim($this->smtp_params['username']);
       $mailer->Password = $this->smtp_params['password'];
       $mailer->Port = $this->smtp_params['port'] ?? 25;
 
       if($this->smtp_params['starttls']) $mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 
+      if(!$this->verify_peer)
+        $mailer->SMTPOptions = ['ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]];
+
       if($this->smtp_params['tls']):
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-        $mail->Port = $this->smtp_params['port'] ?? 465;
+        $mailer->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mailer->Port = $this->smtp_params['port'] ?? 465;
       endif;
       #b::debug("$mailer->Host/$mailer->Username/$mailer->Password/$mailer->Port");
     endif;
