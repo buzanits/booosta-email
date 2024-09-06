@@ -88,7 +88,7 @@ $mailer->set_smtp_params(['host' => 'smtp.here.com', 'auth' => true, 'username' 
 # disable peer verification - do not check the certificate of the peer host
 $mailer->verify_peer(false);
 
-# set debug level - it is the debug level of the uses library phpmailer. See the (documentation)[https://phpmailer.github.io/PHPMailer/classes/PHPMailer-PHPMailer-SMTP.html] for more info.
+# set debug level - it is the debug level of the uses library phpmailer. See the https://phpmailer.github.io/PHPMailer/classes/PHPMailer-PHPMailer-SMTP.html for more info.
 $mailer->set_debuglevel(2);
 
 # set the inline images. Include the image in the html code of the content with: <img width="200" height="150" src="cid:mycoolimage">
